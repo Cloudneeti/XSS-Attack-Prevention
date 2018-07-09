@@ -3,7 +3,7 @@ param (
     # Resource group name
     [Parameter(Mandatory = $true)]
     [string]
-    $ResourceGruopName,
+    $ResourceGroupName,
 
     # Sql server admin user
     [Parameter(Mandatory = $true)]
@@ -36,15 +36,15 @@ $artifactsStorageAccKeyType = "StorageAccessKey"
 
 # Updating SQL server firewall rule
 Write-Verbose -Message "Updating SQL server firewall rule."
-$sqlServerName = (Get-AzureRmSqlServer | Where-Object ResourceGroupName -EQ $ResourceGruopName).ServerName
+$sqlServerName = (Get-AzureRmSqlServer | Where-Object ResourceGroupName -EQ $ResourceGroupName).ServerName
 
-New-AzureRmSqlServerFirewallRule -ResourceGroupName $ResourceGruopName -ServerName $sqlServerName -FirewallRuleName "ClientIpRule$clientIPHash" -StartIpAddress $clientIPAddress -EndIpAddress $clientIPAddress -ErrorAction SilentlyContinue
-New-AzureRmSqlServerFirewallRule -ResourceGroupName $ResourceGruopName -ServerName $sqlServerName -FirewallRuleName "AllowAzureServices" -StartIpAddress 0.0.0.0 -EndIpAddress 0.0.0.0 -ErrorAction SilentlyContinue
+New-AzureRmSqlServerFirewallRule -ResourceGroupName $ResourceGroupName -ServerName $sqlServerName -FirewallRuleName "ClientIpRule$clientIPHash" -StartIpAddress $clientIPAddress -EndIpAddress $clientIPAddress -ErrorAction SilentlyContinue
+New-AzureRmSqlServerFirewallRule -ResourceGroupName $ResourceGroupName -ServerName $sqlServerName -FirewallRuleName "AllowAzureServices" -StartIpAddress 0.0.0.0 -EndIpAddress 0.0.0.0 -ErrorAction SilentlyContinue
 
 Start-Sleep -Seconds 10
 
 Write-Verbose "Get the storage account object."
-$storageAccount = ((Get-AzureRmStorageAccount -ResourceGroupName $ResourceGruopName) | Where-Object {$_.StorageAccountName -Like ($storageAccountNamePrefix + '*')})
+$storageAccount = ((Get-AzureRmStorageAccount -ResourceGroupName $ResourceGroupName) | Where-Object {$_.StorageAccountName -Like ($storageAccountNamePrefix + '*')})
 
 Write-Verbose "Artifact storage account aleardy exists. Creating container"
 New-AzureStorageContainer -Name $storageContainerName -Context $storageAccount.Context -ErrorAction SilentlyContinue
@@ -66,7 +66,7 @@ $artifactsLocation = $storageAccount.Context.BlobEndPoint + $storageContainerNam
 # Importing bacpac file
 Write-Verbose -Message "Importing SQL backpac from release artifacts storage account."
 $sqlBacpacUri = "$artifactsLocation/artifacts/contosoclinic.bacpac"
-$importRequest = New-AzureRmSqlDatabaseImport -ResourceGroupName $ResourceGruopName -ServerName $sqlServerName -DatabaseName $databaseName -StorageKeytype $artifactsStorageAccKeyType -StorageKey $artifactsStorageAccKey -StorageUri "$sqlBacpacUri" -AdministratorLogin $SqlAdminUser -AdministratorLoginPassword $SqlAdminPassword -Edition Standard -ServiceObjectiveName S0 -DatabaseMaxSizeBytes 50000
+$importRequest = New-AzureRmSqlDatabaseImport -ResourceGroupName $ResourceGroupName -ServerName $sqlServerName -DatabaseName $databaseName -StorageKeytype $artifactsStorageAccKeyType -StorageKey $artifactsStorageAccKey -StorageUri "$sqlBacpacUri" -AdministratorLogin $SqlAdminUser -AdministratorLoginPassword $SqlAdminPassword -Edition Standard -ServiceObjectiveName S0 -DatabaseMaxSizeBytes 50000
 $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
 Write-Verbose "Importing.."
 while ($importStatus.Status -eq "InProgress")

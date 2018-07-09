@@ -20,8 +20,8 @@
     },
     "resources": [
         {
-            "apiVersion": "2017-08-01",
             "name": "[parameters('vnetName')]",
+            "apiVersion": "2017-08-01",
             "type": "Microsoft.Network/virtualNetworks",
             "location": "[parameters('location')]",
             "tags": "[parameters('tags')]",

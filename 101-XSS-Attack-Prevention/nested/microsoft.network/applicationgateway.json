@@ -104,7 +104,7 @@
     },
     "resources": [
         {
-            "apiVersion": "2017-06-01",
+            "apiVersion": "2017-10-01",
             "name": "[parameters('applicationGatewayName')]",
             "type": "Microsoft.Network/applicationGateways",
             "location": "[resourceGroup().location]",
@@ -147,8 +147,8 @@
             },
             "resources": [
                 {
-                    "type": "providers/diagnosticSettings",
-                    "name": "Microsoft.Insights/service",
+                    "name": "providers/diagnosticSettings",
+                    "type": "Microsoft.Insights/service",
                     "apiVersion": "2015-07-01",
                     "dependsOn" : [
                         "[parameters('applicationGatewayName')]"

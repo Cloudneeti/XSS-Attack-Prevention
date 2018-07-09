@@ -105,11 +105,11 @@
     "applicationGateways": [
       {
         "name": "appgw-detection",
-        "wafMode": "Prevention"
+        "wafMode": "Detection"
       },
       {
         "name": "appgw-prevention",
-        "wafMode": "Detection"
+        "wafMode": "Prevention"
       }
     ],
     "databases": [
