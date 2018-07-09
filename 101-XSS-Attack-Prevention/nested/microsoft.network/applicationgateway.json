@@ -148,8 +148,8 @@
             "resources": [
                 {
                     "name": "[concat(parameters('applicationGatewayName'),'-diagnosticSettings')]",
-                    "type": "Microsoft.Insights/service",
-                    "apiVersion": "2015-05-01-preview",
+                    "type": "providers/diagnosticSettings",
+                    "apiVersion": "2017-05-01-preview",
                     "dependsOn" : [
                         "[parameters('applicationGatewayName')]"
                     ], 
