@@ -30,8 +30,7 @@ $databaseName = "contosoclinic"
 $artifactsLocation = Split-Path($PSScriptRoot)
 $dbBackpacFilePath = "$artifactsLocation/artifacts/contosoclinic.bacpac"
 
-$deploymentResourceGroup = (Get-AzureRmResourceGroup -Name $ResourceGruopName)
-$storageAccountName = "sqlinjectionstg" + (Get-StringHash ($deploymentResourceGroup.ResourceGroupName)).Substring(0,5)
+$storageAccountNamePrefix = "xssattackstg"
 $storageContainerName = "artifacts"
 $artifactsStorageAccKeyType = "StorageAccessKey"
 
@@ -44,23 +43,12 @@ New-AzureRmSqlServerFirewallRule -ResourceGroupName $ResourceGruopName -ServerNa
 
 Start-Sleep -Seconds 10
 
-Write-Verbose "Check if artifacts storage account exists."
-$storageAccount = (Get-AzureRmStorageAccount -ResourceGroupName $ResourceGruopName | Where-Object {$_.StorageAccountName -eq $storageAccountName})
+Write-Verbose "Get the storage account object."
+$storageAccount = ((Get-AzureRmStorageAccount -ResourceGroupName $ResourceGruopName) | Where-Object {$_.StorageAccountName -Like ($storageAccountNamePrefix + '*')})
 
-# Create the storage account if it doesn't already exist
-if ($storageAccount -eq $null) {
-    Write-Verbose "Artifacts storage account does not exists."
-    Write-Verbose "Provisioning artifacts storage account."
-    $storageAccount = New-AzureRmStorageAccount -StorageAccountName $storageAccountName -Type 'Standard_LRS' `
-        -ResourceGroupName $ResourceGruopName -Location $deploymentResourceGroup.Location
-    Write-Verbose "Artifacts storage account provisioned."
-    Write-Verbose "Creating storage container to upload a blobs."
-    New-AzureStorageContainer -Name $storageContainerName -Context $storageAccount.Context -ErrorAction SilentlyContinue
-}
-else {
-    Write-Verbose "Artifact storage account aleardy exists."
-    New-AzureStorageContainer -Name $storageContainerName -Context $storageAccount.Context -ErrorAction SilentlyContinue
-}
+Write-Verbose "Artifact storage account aleardy exists. Creating container"
+New-AzureStorageContainer -Name $storageContainerName -Context $storageAccount.Context -ErrorAction SilentlyContinue
+
 Write-Verbose "Container created."
 # Retrieve Access Key 
 $artifactsStorageAccKey = (Get-AzureRmStorageAccountKey -Name $storageAccount.StorageAccountName -ResourceGroupName $storageAccount.ResourceGroupName)[0].value 

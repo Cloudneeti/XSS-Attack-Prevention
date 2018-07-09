@@ -124,7 +124,7 @@
     "httpsProbeName": "aseProbeHTTPS",
     "aspName": "[concat('xss-attack-asp','-',substring(uniqueString(resourceGroup().id),0,5))]",
     "appServiceConnectionType": "SQLAzure",
-    "sqlServerName": "xssattackserver",
+    "sqlServerName": "[concat('sqlinjectionserver',substring(uniqueString(resourceGroup().id),0,5))]",
     "omsTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.loganalytics/workspaces.json',parameters('_artifactsLocationSasToken'))]",
     "vnetTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.network/virtualnetworks.json',parameters('_artifactsLocationSasToken'))]",
     "pipTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.network/publicipaddress.json',parameters('_artifactsLocationSasToken'))]",
@@ -219,7 +219,7 @@
             "value": "[parameters('pipAddressType')]"
           },
           "dnsNameForPublicIP": {
-            "value": "[concat(variables('applicationGateways')[copyIndex()].name,'-',parameters('uniqueStringForPublicIP'),substring(uniqueString(resourceGroup().id),0,5),'-pip')]"
+            "value": "[concat(variables('applicationGateways')[copyIndex()].name,'-',toLower(parameters('uniqueStringForPublicIP')),substring(uniqueString(resourceGroup().id),0,5),'-pip')]"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -516,7 +516,7 @@
         },
         "parameters": {
           "sqlServerName": {
-            "value": "[concat(variables('sqlServerName'),substring(uniqueString(resourceGroup().id),0,5))]"
+            "value": "[variables('sqlServerName')]"
           },
           "location": {
             "value": "[parameters('location')]"
