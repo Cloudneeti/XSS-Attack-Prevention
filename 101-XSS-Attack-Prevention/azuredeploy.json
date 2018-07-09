@@ -64,6 +64,13 @@
         "description": "this will be the admin user for sql server"
       }
     },
+    "sqlServerPassword":{
+      "type":"securestring",
+      "metadata": {
+        "description":"this wiil be th password for the admin user for sql server"
+      }
+
+    },
     "emailToSendAlertsTo": {
       "type": "string",
       "metadata": {
@@ -83,7 +90,7 @@
     "tags": {
       "scenario": "XSS-Attack-Prevention"
     },
-    "vNetName": "sql-appgw-vnet",
+    "vNetName": "xss-appgw-vnet",
     "vNetAddressSpace": "10.1.0.0/16",
     "vnetId": "[resourceId('Microsoft.Network/virtualNetworks',variables('vnetName'))]",
     "subnets": [
@@ -105,14 +112,34 @@
         "wafMode": "Detection"
       }
     ],
-    "webAppName": "[concat('xss-webapp','-',substring(uniqueString(resourceGroup().id),0,5))]",
+    "databases": [
+      {
+        "name": "contosoclinic",
+        "edition": "Standard"
+      }
+    ],
+    "webAppName": "[concat('xss-attack-webapp','-',substring(uniqueString(resourceGroup().id),0,5))]",
     "webAppUrl": "[concat(variables('webAppName'),'.azurewebsites.net')]",
     "httpProbeName": "aseProbeHTTP",
     "httpsProbeName": "aseProbeHTTPS",
+    "aspName": "[concat('xss-attack-asp','-',substring(uniqueString(resourceGroup().id),0,5))]",
+    "appServiceConnectionType": "SQLAzure",
+    "sqlServerName": "xssattackserver",
     "omsTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.loganalytics/workspaces.json',parameters('_artifactsLocationSasToken'))]",
     "vnetTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.network/virtualnetworks.json',parameters('_artifactsLocationSasToken'))]",
     "pipTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.network/publicipaddress.json',parameters('_artifactsLocationSasToken'))]",
-    "appgwTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.network/applicationgateway.json',parameters('_artifactsLocationSasToken'))]"
+    "appgwTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.network/applicationgateway.json',parameters('_artifactsLocationSasToken'))]",
+    "diagStorageAccName": "[concat('xssattack','stg',substring(uniqueString(resourceGroup().id),0,5))]",
+    "storageTemplateUri":"[concat(parameters('_artifactsLocation'),'/nested/microsoft.storage/storageaccounts.json',parameters('_artifactsLocationSasToken'))]",  
+    "aspTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.web/serverfarms.json',parameters('_artifactsLocationSasToken'))]",
+    "webappConnectionStringTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.web/sites.config.connectionstrings.json',parameters('_artifactsLocationSasToken'))]",
+    "webappTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.web/sites.json',parameters('_artifactsLocationSasToken'))]",
+    "webappMsDeployTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.web/sites.extensions.msdeploy.json',parameters('_artifactsLocationSasToken'))]",
+    "webPackageUri": "[concat(parameters('_artifactsLocation'),'/artifacts/ContosoClinic.zip',parameters('_artifactsLocationSasToken'))]",
+    "sqlServerTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.sql/servers.v12.0.json',parameters('_artifactsLocationSasToken'))]",
+    "sqlDatabaseTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.sql/servers.databases.json',parameters('_artifactsLocationSasToken'))]",
+    "sqlAuditingTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.sql/servers.auditingsettings.json',parameters('_artifactsLocationSasToken'))]",
+    "sqlSecurityTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.sql/servers.securityalertpolicies.json',parameters('_artifactsLocationSasToken'))]"
   },
   "resources": [
     {
@@ -205,7 +232,7 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "[concat('deploy-',variables('applicationGateways')[copyIndex()].name,'-applicationgateway')]",
+      "name": "[concat('deploy-',variables('applicationGateways')[copyIndex()].name,'-applicationgateway','-resource')]",
       "type": "Microsoft.Resources/deployments",
       "copy": {
         "name": "copy-appgateway",
@@ -349,7 +376,246 @@
           }
         }
       }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[concat(variables('diagStorageAccName'),'-resource')]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('storageTemplateUri')]"
+        },
+        "parameters": {
+          "storageAccountName": {
+            "value": "[variables('diagStorageAccName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          }
+        }
+      }
+    },
+    {
+        "apiVersion": "2017-05-10",
+        "name": "[variables('aspName')]",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+              "uri": "[variables('aspTemplateUri')]"
+            },
+            "parameters": {
+              "name": {
+                "value": "[variables('aspName')]"
+              },
+                "location": {
+                    "value": "[parameters('location')]"
+                },
+                "tags": {
+                    "value": "[variables('tags')]"
+                }
+            }
+        }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[concat(variables('webAppName'),'-resource')]",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+          "[variables('aspName')]"
+      ],
+      "properties": {
+          "mode": "Incremental",
+          "templateLink": {
+              "uri": "[variables('webappTemplateUri')]"
+          },
+          "parameters": {
+              "name": {
+                  "value": "[variables('webAppName')]"
+              },
+              "hostingPlanName": {
+                  "value": "[variables('aspName')]"
+              },
+              "location": {
+                  "value": "[parameters('location')]"
+              },
+              "tags": {
+                  "value": "[variables('tags')]"
+              }
+          }
+      }
+  },
+  {
+    "apiVersion": "2017-05-10",
+    "name": "[concat(variables('webAppName'),'-connectionStrings','-resource')]",
+    "type": "Microsoft.Resources/deployments",
+    "dependsOn": [
+      "[concat(variables('webAppName'),'-resource')]"
+    ],
+    "properties": {
+      "mode": "Incremental",
+      "templateLink": {
+        "uri": "[variables('webappConnectionStringTemplateUri')]"
+      },
+      "parameters": {
+        "webAppName": {
+          "value": "[variables('webAppName')]"
+        },
+        "location": {
+          "value": "[parameters('location')]"
+        },
+        "connectionType": {
+          "value": "[variables('appServiceConnectionType')]"
+        },
+        "connectionString": {
+          "value": "[concat('Data Source=tcp:', variables('sqlServerName'), '.database.windows.net,1433;Initial Catalog=', variables('databases')[0].name, ';User Id=', parameters('sqlAdministratorName'), ';Password=', parameters('sqlServerPassword'), ';Connection Timeout=300;')]"
+        }
+      }
     }
-
+  },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[concat(variables('webAppName'),'-msdeploy','-resource')]",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "[concat(variables('webAppName'),'-connectionStrings','-resource')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('webappMsDeployTemplateUri')]"
+        },
+        "parameters": {
+          "webAppName": {
+            "value": "[variables('webAppName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "packageUri": {
+            "value": "[variables('webPackageUri')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[concat(variables('sqlServerName'),'-resource')]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('sqlServerTemplateUri')]"
+        },
+        "parameters": {
+          "sqlServerName": {
+            "value": "[variables('sqlServerName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "administratorLogin": {
+            "value": "[parameters('sqlAdministratorName')]"
+          },
+          "administratorLoginPassword": {
+            "value": "[parameters('sqlServerPassword')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          }
+        }
+      }
+    },
+    {
+      "condition": false,
+      "apiVersion": "2017-05-10",
+      "name": "[concat(variables('sqlServerName'),'-auditingSettings','-resource')]",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "[concat(variables('sqlServerName'),'-resource')]",
+        "[concat(variables('diagStorageAccName'),'-resource')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('sqlAuditingTemplateUri')]"
+        },
+        "parameters": {
+          "sqlServerName": {
+            "value": "[variables('sqlServerName')]"
+          },
+          "storageAccountName": {
+            "value": "[variables('diagStorageAccName')]"
+          }
+        }
+      }
+    },
+    {
+      "condition":false,
+      "apiVersion": "2017-05-10",
+      "name": "[concat(variables('sqlServerName'),'-securityAlertPolicies')]",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "[concat(variables('sqlServerName'),'-auditingSettings','-resource')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('sqlSecurityTemplateUri')]"
+        },
+        "parameters": {
+          "sqlServerName": {
+            "value": "[variables('sqlServerName')]"
+          },
+          "storageAccountName": {
+            "value": "[variables('diagStorageAccName')]"
+          },
+          "sendAlertsTo": {
+            "value": "[parameters('emailToSendAlertsTo')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[concat(variables('databases')[0].name,'-database','-resource')]",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "[concat(variables('sqlServerName'),'-resource')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('sqlDatabaseTemplateUri')]"
+        },
+        "parameters": {
+          "sqlServerName": {
+            "value": "[variables('sqlServerName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "databaseName": {
+            "value": "[variables('databases')[0].name]"
+          },
+          "omsWorkspaceResourceId": {
+            "value": "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('omsWorkspaceName'))]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "edition": {
+            "value": "[variables('databases')[0].edition]"
+          }
+        }
+      }
+    }
   ]
 }
