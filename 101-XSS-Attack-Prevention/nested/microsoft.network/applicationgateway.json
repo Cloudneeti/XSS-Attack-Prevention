@@ -149,7 +149,7 @@
                 {
                     "name": "providers/diagnosticSettings",
                     "type": "Microsoft.Insights/service",
-                    "apiVersion": "2015-07-01",
+                    "apiVersion": "2018-06-01",
                     "dependsOn" : [
                         "[parameters('applicationGatewayName')]"
                     ], 
