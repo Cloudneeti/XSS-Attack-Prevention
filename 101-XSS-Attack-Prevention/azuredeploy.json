@@ -124,7 +124,7 @@
     "httpsProbeName": "aseProbeHTTPS",
     "aspName": "[concat('xss-attack-asp','-',substring(uniqueString(resourceGroup().id),0,5))]",
     "appServiceConnectionType": "SQLAzure",
-    "sqlServerName": "[concat('sqlinjectionserver',substring(uniqueString(resourceGroup().id),0,5))]",
+    "sqlServerName": "[concat('xssattackserver',substring(uniqueString(resourceGroup().id),0,5))]",
     "omsTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.loganalytics/workspaces.json',parameters('_artifactsLocationSasToken'))]",
     "vnetTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.network/virtualnetworks.json',parameters('_artifactsLocationSasToken'))]",
     "pipTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/microsoft.network/publicipaddress.json',parameters('_artifactsLocationSasToken'))]",
