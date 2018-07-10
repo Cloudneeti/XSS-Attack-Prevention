@@ -47,7 +47,7 @@
         {
             "name": "[parameters('omsWorkspaceName')]",
             "type": "Microsoft.OperationalInsights/workspaces",
-            "apiVersion": "2015-11-01-preview",
+            "apiVersion": "2017-04-26-preview",
             "location": "[parameters('location')]",
             "tags": "[parameters('tags')]",
             "properties": {
@@ -60,7 +60,7 @@
         {
             "type": "Microsoft.OperationsManagement/solutions",
             "name": "[concat(parameters('omsSolutionsName')[copyIndex()], '(', parameters('omsWorkspaceName'), ')')]",
-            "apiVersion": "2015-11-01-preview",
+            "apiVersion": "2017-04-26-preview",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[parameters('omsWorkspaceName')]"
