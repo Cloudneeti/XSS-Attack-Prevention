@@ -3,13 +3,10 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "sqlAdministratorName": {
-        "value": "sqladmin"
+      "value": "sqladmin"
     },
     "sqlServerPassword": {
       "value": "b3S8qb#PFdBjcm"
-    },
-    "emailToSendAlertsTo": {
-      "value": "aniket@avyanconsulting.com"
     }
   }
 }
