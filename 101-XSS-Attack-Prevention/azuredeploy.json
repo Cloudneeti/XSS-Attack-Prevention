@@ -213,7 +213,7 @@
             "value": "[parameters('pipAddressType')]"
           },
           "dnsNameForPublicIP": {
-            "value": "[concat(variables('applicationGateways')[copyIndex()].name,'-',uniqueString(resourceGroup().id),'-pip')]"
+            "value": "[concat(variables('applicationGateways')[copyIndex()].name,'-',uniqueString(resourceGroup().id, 'pip'), '-pip')]"
           },
           "location": {
             "value": "[parameters('location')]"
