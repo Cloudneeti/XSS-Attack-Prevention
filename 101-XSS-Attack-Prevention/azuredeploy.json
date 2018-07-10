@@ -52,12 +52,6 @@
         "description": "this will be the type of public IP address used for the application gateway name"
       }
     },
-    "uniqueStringForPublicIP": {
-      "type": "string",
-      "metadata": {
-        "description": "this will be the dns name used for public ip"
-      }
-    },
     "sqlAdministratorName": {
       "type": "string",
       "metadata": {
@@ -219,7 +213,7 @@
             "value": "[parameters('pipAddressType')]"
           },
           "dnsNameForPublicIP": {
-            "value": "[concat(variables('applicationGateways')[copyIndex()].name,'-',toLower(parameters('uniqueStringForPublicIP')),substring(uniqueString(resourceGroup().id),0,5),'-pip')]"
+            "value": "[concat(variables('applicationGateways')[copyIndex()].name,'-',uniqueString(resourceGroup().id),'-pip')]"
           },
           "location": {
             "value": "[parameters('location')]"

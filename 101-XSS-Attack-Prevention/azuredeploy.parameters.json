@@ -10,9 +10,6 @@
     },
     "emailToSendAlertsTo": {
       "value": "aniket@avyanconsulting.com"
-    },
-    "uniqueStringForPublicIP": {
-      "value": "gen-unique-8"
     }
   }
 }
