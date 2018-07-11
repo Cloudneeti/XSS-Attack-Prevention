@@ -57,7 +57,7 @@ Access to Azure subscription to deploy following resources
 
 2. Execute following command to configure SQL Server Firewall and load data into database using secure string password generated in above step
 
-    `.\DSC\sqlserver.ps1 -ResourceGruopName "<ResourceGroupName>" -SqlAdminUser "<SqlAdminUser>" -SqlAdminPassword $pass -Verbose`
+    `.\DSC\sqlserver.ps1 -ResourceGroupName "<ResourceGroupName>" -SqlAdminUser "<SqlAdminUser>" -SqlAdminPassword $pass -Verbose`
 
 <a name="attack"></a>
 # Perform Attack 
