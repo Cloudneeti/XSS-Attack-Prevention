@@ -50,11 +50,19 @@ Access to Azure subscription to deploy following resources
 
 1. Deploy using "Deploy to Azure" button at the top 
 
-2. Execute following command to generate secure string password for SQL server login
+2. Clone Azure quickstart templates repository using
+
+    `git clone https://github.com/Azure/azure-quickstart-templates.git`
+
+3. Open Windows PowerShell (Run as Administrator) and navigate to 101-XSS-Attack-Prevention directory for XSS attack scenario
+ 
+    `cd .\azure-quickstart-templates\101-XSS-Attack-Prevention\`
+
+4. Execute following command to generate secure string password (password given during deployment of the scenario) for SQL server login
 
     `$pass= "<SQL server admin password>" |  ConvertTo-SecureString -AsPlainText -Force`
 
-2. Execute following command to configure SQL Server Firewall and load data into database using secure string password generated in above step
+5. Execute following command to configure SQL Server Firewall and load data into database using secure string password generated in above step
 
     `.\DSC\sqlserver.ps1 -ResourceGroupName "<ResourceGroupName>" -SqlAdminUser "<SqlAdminUser>" -SqlAdminPassword $pass -Verbose`
 
