@@ -50,7 +50,9 @@ Access to Azure subscription to deploy following resources
 
 1. Deploy using "Deploy to Azure" button at the top 
 
-2. Clone Azure quickstart templates repository using
+Following steps are required to update SQL Server firewall settings and load data into database. 
+
+1. Clone Azure quickstart templates repository using
 
     `git clone https://github.com/Azure/azure-quickstart-templates.git`
 
