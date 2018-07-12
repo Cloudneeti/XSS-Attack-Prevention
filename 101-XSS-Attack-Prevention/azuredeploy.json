@@ -156,7 +156,7 @@
             "value": "[parameters('omsSku')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[resourceGroup().location]"
           },
           "tags": {
             "value": "[variables('tags')]"
@@ -184,7 +184,7 @@
             "value": "[variables('subnets')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[resourceGroup().location]"
           },
           "tags": {
             "value": "[variables('tags')]"
@@ -216,7 +216,7 @@
             "value": "[concat(variables('applicationGateways')[copyIndex()].name,'-',uniqueString(resourceGroup().id, 'pip'), '-pip')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[resourceGroup().location]"
           },
           "tags": {
             "value": "[variables('tags')]"
@@ -245,6 +245,9 @@
           "applicationGatewayName": {
             "value": "[variables('applicationGateways')[copyIndex()].name]"
           },
+          "location": {
+            "value": "[resourceGroup().location]"
+          },
           "publicIPRef": {
             "value": "[reference(concat(variables('applicationGateways')[copyIndex()].name,'-pip','-resource')).outputs.publicIPRef.value]"
           },
@@ -264,7 +267,7 @@
                 "name": "appGatewayIpConfig",
                 "properties": {
                   "subnet": {
-                    "id": "[variables('subnetRef')]"
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('vNetName'), variables('subnets')[0].name)]"
                   }
                 }
               }
@@ -385,7 +388,7 @@
             "value": "[variables('diagStorageAccName')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[resourceGroup().location]"
           },
           "tags": {
             "value": "[variables('tags')]"
@@ -407,7 +410,7 @@
             "value": "[variables('aspName')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[resourceGroup().location]"
           },
           "tags": {
             "value": "[variables('tags')]"
@@ -435,7 +438,7 @@
             "value": "[variables('aspName')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[resourceGroup().location]"
           },
           "tags": {
             "value": "[variables('tags')]"
@@ -460,7 +463,7 @@
             "value": "[variables('webAppName')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[resourceGroup().location]"
           },
           "connectionType": {
             "value": "[variables('appServiceConnectionType')]"
@@ -488,7 +491,7 @@
             "value": "[variables('webAppName')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[resourceGroup().location]"
           },
           "packageUri": {
             "value": "[variables('webPackageUri')]"
@@ -513,7 +516,7 @@
             "value": "[variables('sqlServerName')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[resourceGroup().location]"
           },
           "administratorLogin": {
             "value": "[parameters('sqlAdministratorName')]"
@@ -592,7 +595,7 @@
             "value": "[variables('sqlServerName')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[resourceGroup().location]"
           },
           "databaseName": {
             "value": "[variables('databases')[0].name]"

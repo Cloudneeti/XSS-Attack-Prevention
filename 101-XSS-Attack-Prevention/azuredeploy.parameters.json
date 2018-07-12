@@ -3,10 +3,10 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "sqlAdministratorName": {
-      "value": "sqladmin"
+      "value": "GEN-UNIQUE"
     },
     "sqlServerPassword": {
-      "value": "b3S8qb#PFdBjcm"
+      "value": "GEN-PASSWORD"
     }
   }
 }
