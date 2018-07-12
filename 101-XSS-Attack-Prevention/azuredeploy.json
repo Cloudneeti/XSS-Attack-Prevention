@@ -111,27 +111,26 @@
       }
     ],
     "webAppName": "[concat('xss-attack-webapp','-',substring(uniqueString(resourceGroup().id),0,5))]",
-    "webAppUrl": "[concat(variables('webAppName'),'.azurewebsites.net')]",
     "httpProbeName": "aseProbeHTTP",
     "httpsProbeName": "aseProbeHTTPS",
     "aspName": "[concat('xss-attack-asp','-',substring(uniqueString(resourceGroup().id),0,5))]",
+    "diagStorageAccName": "[concat('xssattack','stg',substring(uniqueString(resourceGroup().id),0,5))]",
     "appServiceConnectionType": "SQLAzure",
     "sqlServerName": "[concat('xssattackserver',substring(uniqueString(resourceGroup().id),0,5))]",
-    "omsTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'/nested/microsoft.loganalytics/workspaces.json'),parameters('_artifactsLocationSasToken'))]",
-    "vnetTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'/nested/microsoft.network/virtualnetworks.json'),parameters('_artifactsLocationSasToken'))]",
-    "pipTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'/nested/microsoft.network/publicipaddress.json'),parameters('_artifactsLocationSasToken'))]",
-    "appgwTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'/nested/microsoft.network/applicationgateway.json'),parameters('_artifactsLocationSasToken'))]",
-    "diagStorageAccName": "[concat('xssattack','stg',substring(uniqueString(resourceGroup().id),0,5))]",
-    "storageTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'/nested/microsoft.storage/storageaccounts.json'),parameters('_artifactsLocationSasToken'))]",
-    "aspTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'/nested/microsoft.web/serverfarms.json'),parameters('_artifactsLocationSasToken'))]",
-    "webappConnectionStringTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'/nested/microsoft.web/sites.config.connectionstrings.json'),parameters('_artifactsLocationSasToken'))]",
-    "webappTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'/nested/microsoft.web/sites.json'),parameters('_artifactsLocationSasToken'))]",
-    "webappMsDeployTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'/nested/microsoft.web/sites.extensions.msdeploy.json'),parameters('_artifactsLocationSasToken'))]",
-    "webPackageUri": "[concat(uri(parameters('_artifactsLocation'),'/artifacts/ContosoClinic.zip'),parameters('_artifactsLocationSasToken'))]",
-    "sqlServerTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'/nested/microsoft.sql/servers.v12.0.json'),parameters('_artifactsLocationSasToken'))]",
-    "sqlDatabaseTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'/nested/microsoft.sql/servers.databases.json'),parameters('_artifactsLocationSasToken'))]",
-    "sqlAuditingTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'/nested/microsoft.sql/servers.auditingsettings.json'),parameters('_artifactsLocationSasToken'))]",
-    "sqlSecurityTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'/nested/microsoft.sql/servers.securityalertpolicies.json'),parameters('_artifactsLocationSasToken'))]"
+    "omsTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'nested/microsoft.loganalytics/workspaces.json'),parameters('_artifactsLocationSasToken'))]",
+    "vnetTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'nested/microsoft.network/virtualnetworks.json'),parameters('_artifactsLocationSasToken'))]",
+    "pipTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'nested/microsoft.network/publicipaddress.json'),parameters('_artifactsLocationSasToken'))]",
+    "appgwTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'nested/microsoft.network/applicationgateway.json'),parameters('_artifactsLocationSasToken'))]",
+    "storageTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'nested/microsoft.storage/storageaccounts.json'),parameters('_artifactsLocationSasToken'))]",
+    "aspTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'nested/microsoft.web/serverfarms.json'),parameters('_artifactsLocationSasToken'))]",
+    "webappConnectionStringTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'nested/microsoft.web/sites.config.connectionstrings.json'),parameters('_artifactsLocationSasToken'))]",
+    "webappTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'nested/microsoft.web/sites.json'),parameters('_artifactsLocationSasToken'))]",
+    "webappMsDeployTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'nested/microsoft.web/sites.extensions.msdeploy.json'),parameters('_artifactsLocationSasToken'))]",
+    "webPackageUri": "[concat(uri(parameters('_artifactsLocation'),'artifacts/ContosoClinic.zip'),parameters('_artifactsLocationSasToken'))]",
+    "sqlServerTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'nested/microsoft.sql/servers.v12.0.json'),parameters('_artifactsLocationSasToken'))]",
+    "sqlDatabaseTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'nested/microsoft.sql/servers.databases.json'),parameters('_artifactsLocationSasToken'))]",
+    "sqlAuditingTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'nested/microsoft.sql/servers.auditingsettings.json'),parameters('_artifactsLocationSasToken'))]",
+    "sqlSecurityTemplateUri": "[concat(uri(parameters('_artifactsLocation'),'nested/microsoft.sql/servers.securityalertpolicies.json'),parameters('_artifactsLocationSasToken'))]"
   },
   "resources": [
     {
@@ -265,7 +264,7 @@
                 "name": "appGatewayIpConfig",
                 "properties": {
                   "subnet": {
-                    "id": "[concat(reference(concat(variables('vnetName'),'-resource')).outputs.vnetId.value,'/subnets/',variables('subnets')[0].name)]"
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('vNetName'),variables('subnets')[0].name)]"
                   }
                 }
               }
@@ -343,7 +342,7 @@
                 "name": "[variables('httpProbeName')]",
                 "properties": {
                   "protocol": "Http",
-                  "host": "[variables('webAppUrl')]",
+                  "host": "[reference(concat(variables('webAppName'),'-resource')).outputs.endpoint.value]",
                   "path": "/",
                   "interval": 30,
                   "timeout": 30,
@@ -354,7 +353,7 @@
                 "name": "[variables('httpsProbeName')]",
                 "properties": {
                   "protocol": "Https",
-                  "host": "[variables('webAppUrl')]",
+                  "host": "[reference(concat(variables('webAppName'),'-resource')).outputs.endpoint.value]",
                   "path": "/",
                   "interval": 30,
                   "timeout": 30,
@@ -367,7 +366,7 @@
             "value": "[variables('applicationGateways')[copyIndex()].wafMode]"
           },
           "omsWorkspaceResourceId": {
-            "value": "[reference('deploy-sql-injection-attack-oms-resource').outputs.workspaceId.value]"
+            "value": "[reference('deploy-sql-injection-attack-oms-resource').outputs.workspaceCustomerId.value]"
           }
         }
       }
@@ -599,7 +598,7 @@
             "value": "[variables('databases')[0].name]"
           },
           "omsWorkspaceResourceId": {
-            "value": "[reference('deploy-sql-injection-attack-oms-resource').outputs.workspaceId.value]"
+            "value": "[reference('deploy-xss-attack-oms-resource').outputs.workspaceId.value]"
           },
           "tags": {
             "value": "[variables('tags')]"
