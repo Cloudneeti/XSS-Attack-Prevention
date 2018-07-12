@@ -86,7 +86,6 @@
     },
     "vNetName": "xss-appgw-vnet",
     "vNetAddressSpace": "10.1.0.0/16",
-    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks',variables('vnetName'))]",
     "subnets": [
       {
         "name": "appgw-subnet",
@@ -95,7 +94,6 @@
         }
       }
     ],
-    "subnetRef": "[concat(variables('vnetId'),'/subnets/',variables('subnets')[0].name)]",
     "applicationGateways": [
       {
         "name": "appgw-detection",
@@ -156,7 +154,7 @@
             "value": "[parameters('omsSku')]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "tags": {
             "value": "[variables('tags')]"
@@ -184,7 +182,7 @@
             "value": "[variables('subnets')]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "tags": {
             "value": "[variables('tags')]"
@@ -216,7 +214,7 @@
             "value": "[concat(variables('applicationGateways')[copyIndex()].name,'-',uniqueString(resourceGroup().id, 'pip'), '-pip')]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "tags": {
             "value": "[variables('tags')]"
@@ -246,7 +244,7 @@
             "value": "[variables('applicationGateways')[copyIndex()].name]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "publicIPRef": {
             "value": "[reference(concat(variables('applicationGateways')[copyIndex()].name,'-pip','-resource')).outputs.publicIPRef.value]"
@@ -267,7 +265,7 @@
                 "name": "appGatewayIpConfig",
                 "properties": {
                   "subnet": {
-                    "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('vNetName'), variables('subnets')[0].name)]"
+                    "id": "[concat(reference(concat(variables('vnetName'),'-resource')).outputs.vnetId.value,'/subnets/',variables('subnets')[0].name)]"
                   }
                 }
               }
@@ -280,7 +278,7 @@
                 "properties": {
                   "BackendAddresses": [
                     {
-                      "fqdn": "[variables('webAppUrl')]"
+                      "fqdn": "[reference(concat(variables('webAppName'),'-resource')).outputs.endpoint.value]"
                     }
                   ]
                 }
@@ -297,7 +295,7 @@
                   "CookieBasedAffinity": "Disabled",
                   "pickHostNameFromBackendAddress": "true",
                   "Probe": {
-                    "id": "[concat(resourceId('Microsoft.Network/applicationGateways',variables('applicationGateways')[copyIndex()].name),'/probes/',variables('httpProbeName'))]"
+                    "id": "[resourceId('Microsoft.Network/applicationGateways/probes',variables('applicationGateways')[copyIndex()].name,variables('httpProbeName'))]"
                   }
                 }
               }
@@ -309,10 +307,10 @@
                 "name": "appGatewayHttpListener",
                 "properties": {
                   "FrontendIPConfiguration": {
-                    "Id": "[concat(resourceId('Microsoft.Network/applicationGateways',variables('applicationGateways')[copyIndex()].name), '/frontendIPConfigurations/appGatewayFrontendIP')]"
+                    "Id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations',variables('applicationGateways')[copyIndex()].name, 'appGatewayFrontendIP')]"
                   },
                   "FrontendPort": {
-                    "Id": "[concat(resourceId('Microsoft.Network/applicationGateways',variables('applicationGateways')[copyIndex()].name), '/frontendPorts/appGatewayFrontendPort')]"
+                    "Id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts',variables('applicationGateways')[copyIndex()].name, 'appGatewayFrontendPort')]"
                   },
                   "Protocol": "Http",
                   "SslCertificate": null
@@ -327,13 +325,13 @@
                 "properties": {
                   "RuleType": "Basic",
                   "httpListener": {
-                    "id": "[concat(resourceId('Microsoft.Network/applicationGateways',variables('applicationGateways')[copyIndex()].name), '/httpListeners/appGatewayHttpListener')]"
+                    "id": "[resourceId('Microsoft.Network/applicationGateways/httpListeners',variables('applicationGateways')[copyIndex()].name, 'appGatewayHttpListener')]"
                   },
                   "backendAddressPool": {
-                    "id": "[concat(resourceId('Microsoft.Network/applicationGateways',variables('applicationGateways')[copyIndex()].name), '/backendAddressPools/appGatewayBackendPool')]"
+                    "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools',variables('applicationGateways')[copyIndex()].name, 'appGatewayBackendPool')]"
                   },
                   "backendHttpSettings": {
-                    "id": "[concat(resourceId('Microsoft.Network/applicationGateways',variables('applicationGateways')[copyIndex()].name), '/backendHttpSettingsCollection/appGatewayBackendHttpSettings')]"
+                    "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection',variables('applicationGateways')[copyIndex()].name, 'appGatewayBackendHttpSettings')]"
                   }
                 }
               }
@@ -369,7 +367,7 @@
             "value": "[variables('applicationGateways')[copyIndex()].wafMode]"
           },
           "omsWorkspaceResourceId": {
-            "value": "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('omsWorkspaceName'))]"
+            "value": "[reference('deploy-sql-injection-attack-oms-resource').outputs.workspaceId.value]"
           }
         }
       }
@@ -388,7 +386,7 @@
             "value": "[variables('diagStorageAccName')]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "tags": {
             "value": "[variables('tags')]"
@@ -410,7 +408,7 @@
             "value": "[variables('aspName')]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "tags": {
             "value": "[variables('tags')]"
@@ -438,7 +436,7 @@
             "value": "[variables('aspName')]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "tags": {
             "value": "[variables('tags')]"
@@ -463,7 +461,7 @@
             "value": "[variables('webAppName')]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "connectionType": {
             "value": "[variables('appServiceConnectionType')]"
@@ -491,7 +489,7 @@
             "value": "[variables('webAppName')]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "packageUri": {
             "value": "[variables('webPackageUri')]"
@@ -516,7 +514,7 @@
             "value": "[variables('sqlServerName')]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "administratorLogin": {
             "value": "[parameters('sqlAdministratorName')]"
@@ -595,13 +593,13 @@
             "value": "[variables('sqlServerName')]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "databaseName": {
             "value": "[variables('databases')[0].name]"
           },
           "omsWorkspaceResourceId": {
-            "value": "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('omsWorkspaceName'))]"
+            "value": "[reference('deploy-sql-injection-attack-oms-resource').outputs.workspaceId.value]"
           },
           "tags": {
             "value": "[variables('tags')]"
