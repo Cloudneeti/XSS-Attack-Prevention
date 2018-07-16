@@ -1,7 +1,5 @@
 # XSS-Attack-Prevention
 
-This repository contains Cross Site Scripting (XSS) attack detection & prevention on a Web Application <p></p>
-
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAvyanConsultingCorp%2FXSS-Attack-Prevention%2Fmaster%2F101-XSS-Attack-Prevention%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/> 
 </a>
@@ -18,10 +16,11 @@ This repository contains Cross Site Scripting (XSS) attack detection & preventio
 6. [Detect Attack](#detect)
 7. [Respond/Mitigate](#mitigate)
 8. [Configuration validation](#config)
+9. [Teardown Deployment](#teardown)
 
 <a name="objectives"></a>
 # Objective of the POC
-Showcase a Cross Site Scripting (XSS) attack and mitigation on a Web Application 
+This playbook demonstrates a Cross-site scripting (XSS) attack against an unprotected sample web application.  After simulating an attack, hardening the resource by applying protection to the network layer.  Re-attempt the attack against the protected web application to see the defense in action. 
 
 <a name="overview"></a>
 # Overview
@@ -99,14 +98,13 @@ Attack on web app with
  ![](images/xss-attack-script.png) 
 
 
-5. Application will save data in database and dispaly it on dashboard
-.
+5. Application will save data in database and display it on dashboard.
 
     ![](images/xss-attack-dashboard.png)    
     
 <a name="detect"></a>    
 # Detect
-To detect the attack execute following query in Azure Log Analytics
+To detect the attack, execute following query in Azure Log Analytics
 1. Go to Azure Portal --> navigate to Log Analytics in same resource group  
 
 ![](images/xss-common-oms-location.png) 
@@ -124,7 +122,7 @@ To detect the attack execute following query in Azure Log Analytics
 <a name="mitigate"></a>
 # Mitigate 
 
-  * Update Web application firewall mode to Prevention for application gateway. This will take 5-10 mins. Hence we will connect the application using Application Gateway (WAF- Prevention mode) 
+  * Update Web application firewall mode to Prevention for application gateway. This will take 5-10 mins. Hence, we will connect the application using Application Gateway (WAF- Prevention mode) 
 
     ![](images/xss-appgateway-waf-prev.png)    
     
@@ -137,7 +135,7 @@ To detect the attack execute following query in Azure Log Analytics
     ![](images/403-forbidden-access-denied.png)  
 
  
-* To detect the prevention of attack execute following query in Azure Log Analytics
+* To detect the prevention of attack, execute following query in Azure Log Analytics
 
 
     AzureDiagnostics | where Message  contains "xss" and action_s contains "blocked"
@@ -153,6 +151,19 @@ You will notice events related to detection and prevention items. First time it 
 * Cross site scripting (XSS) is a common attack vector that injects malicious code into a vulnerable web application. A successful cross site scripting attack can have devastating consequences for an online business’s reputation and its relationship with its clients. Detection and remediation can be easily done using advanced controls along with Audit and Remediation procedure in Cloudneeti.
 
 * Cloudneeti is available on the Azure marketplace. Try out the free test drive here https://aka.ms/Cloudneeti 
+
+<a name="teardown"></a>
+## Teardown Deployment 
+
+Run following powershell command after login to subscription to clear all the resources deployed during the demo. Specify resource group name given during deployment
+ 
+ `Remove-AzureRmResourceGroup -Name <ResourceGroupName>  -Force `
+ 
+    
+Verification steps -
+1. Login to Azure Portal / Subscription
+2. Check if resource group name given during deployment is cleared.
+<p/>
 
 
 
