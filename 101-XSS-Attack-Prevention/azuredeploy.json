@@ -603,6 +603,15 @@
           "tags": {
             "value": "[variables('tags')]"
           },
+          "administratorLogin": {
+            "value": "[parameters('sqlAdministratorName')]"
+          },
+          "administratorLoginPassword": {
+            "value": "[parameters('sqlServerPassword')]"
+          },
+          "bacpacuri": {
+            "value": "https://avyanquickstartartifacts.blob.core.windows.net/contosodb/contosoclinic.bacpac"
+          },
           "edition": {
             "value": "[variables('databases')[0].edition]"
           }
