@@ -11,12 +11,11 @@
 1. [Objectives](#objectives)
 2. [Overview](#overview)
 3. [Pre-requisites](#prerequisites)
-4. [Deploy](#deployment)
-5. [Perform Attack](#attack)
-6. [Detect Attack](#detect)
-7. [Respond/Mitigate](#mitigate)
-8. [Configuration validation](#config)
-9. [Teardown Deployment](#teardown)
+4. [Perform Attack](#attack)
+5. [Detect Attack](#detect)
+6. [Respond/Mitigate](#mitigate)
+7. [Configuration validation](#config)
+8. [Teardown Deployment](#teardown)
 
 <a name="objectives"></a>
 # Objective of the POC
@@ -43,29 +42,6 @@ Access to Azure subscription to deploy following resources
 2. App Service (Web App)
 3. SQL Database 
 4. OMS (Monitoring)
-
-<a name="deployment"></a>
-# Deploy
-
-1. Deploy using "Deploy to Azure" button at the top 
-
-Following steps are required to update SQL Server firewall settings and load data into database. 
-
-1. Clone Azure quickstart templates repository using
-
-    `git clone https://github.com/Azure/azure-quickstart-templates.git`
-
-3. Open Windows PowerShell (Run as Administrator) and navigate to 101-XSS-Attack-Prevention directory for XSS attack scenario
- 
-    `cd .\azure-quickstart-templates\101-XSS-Attack-Prevention\`
-
-4. Execute following command to generate secure string password (password given during deployment of the scenario) for SQL server login
-
-    `$pass= "<SQL server admin password>" |  ConvertTo-SecureString -AsPlainText -Force`
-
-5. Execute following command to configure SQL Server Firewall and load data into database using secure string password generated in above step
-
-    `.\DSC\sqlserver.ps1 -ResourceGroupName "<ResourceGroupName>" -SqlAdminUser "<SqlAdminUser>" -SqlAdminPassword $pass -Verbose`
 
 <a name="attack"></a>
 # Perform Attack 
