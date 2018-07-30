@@ -29,7 +29,7 @@
     },
     "variables": {
       "tags": {
-        "[concat('hidden-related:', '/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "empty"
+        "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms/', parameters('hostingPlanName')))]":"empty"
       },
       "combinedTags": "[union(parameters('tags'),variables('tags'))]"
     },
